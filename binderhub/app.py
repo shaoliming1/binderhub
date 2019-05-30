@@ -520,7 +520,7 @@ class BinderHub(Application):
         handlers = [
             (r'/metrics', MetricsHandler),
             (r'/versions', VersionHandler),
-            (r"/build/([^/]+)/(.+)", BuildHandler),
+            (r"/build/([^/]+)/(.+)/(.+)", BuildHandler),
             (r"/v2/([^/]+)/(.+)", ParameterizedMainHandler),
             (r"/repo/([^/]+)/([^/]+)(/.*)?", LegacyRedirectHandler),
             # for backward-compatible mybinder.org badge URLs

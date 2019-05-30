@@ -28,11 +28,15 @@ class ParameterizedMainHandler(BaseHandler):
 
     @authenticated
     def get(self, provider_prefix, _unescaped_spec):
+        print(provider_prefix)
+        print(_unescaped_spec)
         prefix = '/v2/' + provider_prefix
         spec = self.get_spec_from_request(prefix)
+
         spec = spec.rstrip("/")
+        print(spec)
         try:
-            self.get_provider(provider_prefix, spec=spec)
+            self.get_provider(provider_prefix, spec=spec, repo_url=None)
         except HTTPError:
             raise
         except Exception as e:

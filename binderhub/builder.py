@@ -187,7 +187,7 @@ class BuildHandler(BaseHandler):
         })
 
     @authenticated
-    async def get(self, provider_prefix, _unescaped_spec):
+    async def get(self, provider_prefix, _unescaped_spec, real_repo):
         """Get a built image for a given spec and repo provider.
 
         Different repo providers will require different spec information. This
@@ -203,6 +203,7 @@ class BuildHandler(BaseHandler):
 
         """
         prefix = '/build/' + provider_prefix
+        self.request.path = self.request.path.rsplit('/', 1)[0]
         spec = self.get_spec_from_request(prefix)
 
         # set up for sending event streams
@@ -224,7 +225,7 @@ class BuildHandler(BaseHandler):
 
         # get a provider object that encapsulates the provider and the spec
         try:
-            provider = self.get_provider(provider_prefix, spec=spec)
+            provider = self.get_provider(provider_prefix, spec=spec, repo_url=real_repo)
         except Exception as e:
             app_log.exception("Failed to get provider for %s", key)
             await self.fail(str(e))
@@ -268,6 +269,7 @@ class BuildHandler(BaseHandler):
             build_slug=safe_build_slug,
             ref=ref
         ).replace('_', '-').lower()
+        print(image_name)
 
         if self.settings['use_registry']:
             image_manifest = await self.registry.get_image_manifest(*'/'.join(image_name.split('/')[-2:]).split(':', 1))

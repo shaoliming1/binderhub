@@ -141,7 +141,9 @@ class GitRepoProvider(RepoProvider):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        print(self.spec)
         url, resolved_ref = self.spec.rsplit('/', 1)
+        print(resolved_ref)
         self.repo = urllib.parse.unquote(url)
         if not resolved_ref:
             raise ValueError("`resolved_ref` must be specified as a query parameter for the basic git provider")
@@ -154,7 +156,7 @@ class GitRepoProvider(RepoProvider):
         return self.resolved_ref
 
     def get_repo_url(self):
-        return self.repo
+        return self.repo_url
 
     def get_build_slug(self):
         return self.repo

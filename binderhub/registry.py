@@ -190,6 +190,7 @@ class DockerRegistry(LoggingConfigurable):
         client = httpclient.AsyncHTTPClient()
         url = "{}/v2/{}/manifests/{}".format(self.url, image, tag)
         # first, get a token to perform the manifest request
+        self.token_url = '172.16.185.27:30002/service/token?account=shaoliming&service=harbor-registry'
         if self.token_url:
             auth_req = httpclient.HTTPRequest(
                 url_concat(self.token_url, {"scope": "repository:{}:pull".format(image)}),
