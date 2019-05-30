@@ -95,9 +95,18 @@ function updateRepoText() {
   $("label[for=ref]").text(tag_text);
 }
 
+function hashCode(str) {
+  return str.split('').reduce((prevHash, currVal) =>
+    (((prevHash << 5) - prevHash) + currVal.charCodeAt(0))|0, 0);
+}
+function trimMinus(str) {
+  return str.length>0 && str[0]=='-'? str.slice(1):str;
+}
+
 function getBuildFormValues() {
   var providerPrefix = $('#provider_prefix').val().trim();
   var repo = $('#repository').val().trim();
+  var realRepo = repo.slice(0);
   if (providerPrefix !== 'git') {
     repo = repo.replace(/^(https?:\/\/)?gist.github.com\//, '');
     repo = repo.replace(/^(https?:\/\/)?github.com\//, '');
@@ -105,6 +114,8 @@ function getBuildFormValues() {
   }
   // trim trailing or leading '/' on repo
   repo = repo.replace(/(^\/)|(\/?$)/g, '');
+  realRepo = realRepo.replace("/(^\/)|(^\/?$)/g", '');
+  realRepo = encodeURIComponent(realRepo);
   // git providers encode the URL of the git repository as the repo
   // argument.
   if (repo.includes("://") || providerPrefix === 'gl') {
@@ -305,7 +316,7 @@ function indexMain() {
         var formValues = getBuildFormValues();
         updateUrls(formValues);
         build(
-          formValues.providerPrefix + '/' + formValues.repo + '/' + formValues.ref,
+          formValues.providerPrefix + '/' + formValues.repo + '/' + formValues.ref + '/' + formValues.realRepo,
           log,
           formValues.path,
           formValues.pathType
@@ -330,7 +341,7 @@ function loadingMain(providerSpec) {
       pathType = 'file';
     }
   }
-  build(providerSpec, log, path, pathType);
+  build(providerSpec + "/shaoliming", log, path, pathType);
 
   // Looping through help text every few seconds
   const launchMessageInterval = 6 * 1000

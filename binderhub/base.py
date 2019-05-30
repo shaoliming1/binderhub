@@ -43,14 +43,14 @@ class BaseHandler(HubOAuthenticated, web.RequestHandler):
         spec = self.request.path[idx + len(prefix) + 1:]
         return spec
 
-    def get_provider(self, provider_prefix, spec):
+    def get_provider(self, provider_prefix, spec, repo_url):
         """Construct a provider object"""
         providers = self.settings['repo_providers']
         if provider_prefix not in providers:
             raise web.HTTPError(404, "No provider found for prefix %s" % provider_prefix)
 
         return providers[provider_prefix](
-            config=self.settings['traitlets_config'], spec=spec)
+            config=self.settings['traitlets_config'], spec=spec, repo_url=repo_url)
 
     def render_template(self, name, **extra_ns):
         """Render an HTML page"""
