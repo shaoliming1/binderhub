@@ -310,7 +310,7 @@ function indexMain() {
         var formValues = getBuildFormValues();
         updateUrls(formValues);
         build(
-          formValues.providerPrefix + '/' + formValues.repo + '/' + formValues.ref + '/' + formValues.realRepo,
+          formValues.providerPrefix + '/' + formValues.repo + '/' + formValues.ref + '?real_repo='+formValues.realRepo,
           log,
           formValues.path,
           formValues.pathType
@@ -335,7 +335,7 @@ function loadingMain(providerSpec) {
       pathType = 'file';
     }
   }
-  build(providerSpec + "/shaoliming", log, path, pathType);
+  build(providerSpec, log, path, pathType);
   return false;
 }
 

@@ -36,7 +36,8 @@ class ParameterizedMainHandler(BaseHandler):
         spec = spec.rstrip("/")
         print(spec)
         try:
-            self.get_provider(provider_prefix, spec=spec, repo_url=None)
+            real_repo = self.get_query_argument('real_repo', '')
+            self.get_provider(provider_prefix, spec=spec, repo_url=real_repo)
         except HTTPError:
             raise
         except Exception as e:
