@@ -111,6 +111,17 @@ function getBuildFormValues() {
     repo = repo.replace(/^(https?:\/\/)?gist.github.com\//, '');
     repo = repo.replace(/^(https?:\/\/)?github.com\//, '');
     repo = repo.replace(/^(https?:\/\/)?gitlab.com\//, '');
+  }else{
+    // extract the host
+    var domainRegex = /^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/?\n]+)(?::\d+)?/ig;
+    var domains = repo.match(domainRegex);
+    if(domains == null || domains.length <=0 || domains.length > 1)
+    {
+      console.error("not an invalid domain");
+      return;
+    }
+    var hashStr = trimMinus(hashCode(domains[0]).toString(16).trim());
+    repo = repo.replace(domainRegex, hashStr);
   }
   // trim trailing or leading '/' on repo
   repo = repo.replace(/(^\/)|(\/?$)/g, '');
@@ -127,7 +138,7 @@ function getBuildFormValues() {
     ref = "";
   }
   var path = $('#filepath').val().trim();
-  return {'providerPrefix': providerPrefix, 'repo': repo,
+  return {'providerPrefix': providerPrefix, 'repo': repo,'realRepo':realRepo,
           'ref': ref, 'path': path, 'pathType': getPathType()}
 }
 
@@ -316,7 +327,7 @@ function indexMain() {
         var formValues = getBuildFormValues();
         updateUrls(formValues);
         build(
-          formValues.providerPrefix + '/' + formValues.repo + '/' + formValues.ref + '/' + formValues.realRepo,
+          formValues.providerPrefix + '/' + formValues.repo + '/' + formValues.ref + '?real_repo='+formValues.realRepo,
           log,
           formValues.path,
           formValues.pathType
@@ -341,7 +352,7 @@ function loadingMain(providerSpec) {
       pathType = 'file';
     }
   }
-  build(providerSpec + "/shaoliming", log, path, pathType);
+  build(providerSpec, log, path, pathType);
 
   // Looping through help text every few seconds
   const launchMessageInterval = 6 * 1000
