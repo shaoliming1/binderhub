@@ -60,12 +60,12 @@ function updateRepoText() {
     text = "GitHub repository name or URL";
   } else if (provider === "gl") {
     text = "GitLab.com repository or URL";
-  }
-  else if (provider === "gist") {
+  } else if(provider === "bnu"){
+    text = "gitlab.bnu repository or URL"
+  } else if (provider === "gist") {
     text = "Gist ID (username/gistId) or URL";
     tag_text = "Git commit SHA";
-  }
-  else if (provider === "git") {
+  } else if (provider === "git") {
     text = "Arbitrary git repository URL (http://git.example.com/repo)";
     tag_text = "Git commit SHA";
   }
@@ -91,6 +91,7 @@ function getBuildFormValues() {
     repo = repo.replace(/^(https?:\/\/)?gist.github.com\//, '');
     repo = repo.replace(/^(https?:\/\/)?github.com\//, '');
     repo = repo.replace(/^(https?:\/\/)?gitlab.com\//, '');
+    repo = repo.replace(/^(https?:\/\/)?gitlab.bnu.edu.cn\//,'');
   }else{
     // extract the host
     var domainRegex = /^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/?\n]+)(?::\d+)?/ig;
@@ -110,7 +111,7 @@ function getBuildFormValues() {
   // git providers encode the URL of the git repository as the repo
   // argument.
   if (repo.includes("://") ||
-      providerPrefix === 'gl') {
+      providerPrefix === 'gl' || providerPrefix == "bnu") {
     repo = encodeURIComponent(repo);
   }
 
@@ -124,6 +125,7 @@ function updateUrls(formValues) {
   if (typeof formValues === "undefined") {
       formValues = getBuildFormValues();
   }
+  console.log(formValues)
   var url = v2url(
                formValues.providerPrefix,
                formValues.repo,
@@ -131,7 +133,6 @@ function updateUrls(formValues) {
                formValues.path,
                formValues.pathType
             );
-
   if ((url||'').trim().length > 0){
     // update URLs and links (badges, etc.)
     $("#badge-link").attr('href', url);
