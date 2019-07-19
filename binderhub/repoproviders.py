@@ -454,6 +454,7 @@ class GitLabRepoProvider(RepoProvider):
         try:
             resp = yield client.fetch(api_url, user_agent="BinderHub")
         except HTTPError as e:
+            print(e)
             if e.code == 404:
                 return None
             else:
@@ -480,6 +481,31 @@ class GitLabRepoProvider(RepoProvider):
             self.resolved_ref = await self.get_resolved_ref()
         return f"https://{self.hostname}/{self.namespace}/tree/{self.resolved_ref}"
 
+class BnuRepoProvider(GitLabRepoProvider):
+    name = Unicode('BNU')
+    hostname = Unicode('gitlab.bnu.edu.cn', config=True,
+        help="""The host of the BNU GitLab instance
+
+        For personal GitLab servers.
+        """
+        )
+
+    @default('auth')
+    def _default_auth(self):
+        auth = {}
+        for key in ('access_token', 'private_token'):
+            value = getattr(self, key)
+            if value:
+                auth[key.upper()] = value
+        return auth
+
+    @default('access_token')
+    def _access_token_default(self):
+        return os.getenv('BNU_GITLAB_ACCESS_TOKEN', '')
+
+    @default('private_token')
+    def _private_token_default(self):
+        return os.getenv('BNU_GITLAB_PRIVATE_TOKEN', '')
 
 class GitHubRepoProvider(RepoProvider):
     """Repo provider for the GitHub service"""

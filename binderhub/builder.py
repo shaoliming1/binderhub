@@ -274,7 +274,6 @@ class BuildHandler(BaseHandler):
             build_slug=safe_build_slug,
             ref=ref
         ).replace('_', '-').lower()
-        print(image_name)
 
         if self.settings['use_registry']:
             image_manifest = await self.registry.get_image_manifest(*'/'.join(image_name.split('/')[-2:]).split(':', 1))

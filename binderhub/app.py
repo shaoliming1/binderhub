@@ -24,6 +24,7 @@ from traitlets import Unicode, Integer, Bool, Dict, validate, TraitError, defaul
 from traitlets.config import Application
 from jupyterhub.services.auth import HubOAuthCallbackHandler
 
+from binderhub.repoproviders import BnuRepoProvider
 from .base import AboutHandler, Custom404, VersionHandler
 from .build import Build
 from .builder import BuildHandler
@@ -393,6 +394,7 @@ class BinderHub(Application):
             'gl': GitLabRepoProvider,
             'zenodo': ZenodoProvider,
             'figshare': FigshareProvider,
+            'bnu': BnuRepoProvider
         },
         config=True,
         help="""

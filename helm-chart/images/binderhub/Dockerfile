@@ -2,9 +2,9 @@
 # ref: https://docs.docker.com/develop/develop-images/multistage-build/
 FROM buildpack-deps:stretch as build-stage
 
-RUN echo 'deb http://deb.nodesource.com/node_8.x artful main' > /etc/apt/sources.list.d/nodesource.list \
- && curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add -
+RUN echo 'deb http://deb.nodesource.com/node_8.x artful main' > /etc/apt/sources.list.d/nodesource.list
 
+RUN curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add -
 RUN apt-get update && \
     apt-get install --yes \
         nodejs \
@@ -40,6 +40,12 @@ RUN pip install --no-cache-dir \
 # FUTURE: Follow the approach taken in Z2JH:
 #         https://github.com/jupyterhub/zero-to-jupyterhub-k8s/pull/1478
 COPY helm-chart/images/binderhub/binderhub_config.py .
+
+ADD GeoTrust_RSA_CA_2018.crt   /usr/local/share/ca-certificates
+ADD gitlab.crt    /usr/local/share/ca-certificates
+RUN update-ca-certificates --fresh && \
+    openssl s_client -showcerts -connect gitlab.bnu.edu.cn:443 2>/dev/null  | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p'  >> /etc/ssl/certs/ca-certificates.crt
+
 
 CMD ["python3", "-m", "binderhub"]
 ENV PYTHONUNBUFFERED=1

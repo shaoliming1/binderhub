@@ -70,12 +70,12 @@ function updateRepoText() {
     text = "GitHub repository name or URL";
   } else if (provider === "gl") {
     text = "GitLab.com repository or URL";
-  }
-  else if (provider === "gist") {
+  } else if(provider === "bnu"){
+    text = "gitlab.bnu repository or URL"
+  } else if (provider === "gist") {
     text = "Gist ID (username/gistId) or URL";
     tag_text = "Git commit SHA";
-  }
-  else if (provider === "git") {
+  } else if (provider === "git") {
     text = "Arbitrary git repository URL (http://git.example.com/repo)";
     tag_text = "Git branch, tag, or commit SHA";
   }
@@ -111,6 +111,7 @@ function getBuildFormValues() {
     repo = repo.replace(/^(https?:\/\/)?gist.github.com\//, '');
     repo = repo.replace(/^(https?:\/\/)?github.com\//, '');
     repo = repo.replace(/^(https?:\/\/)?gitlab.com\//, '');
+    repo = repo.replace(/^(https?:\/\/)?gitlab.bnu.edu.cn\//,'');
   }else{
     // extract the host
     var domainRegex = /^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/?\n]+)(?::\d+)?/ig;
@@ -172,6 +173,7 @@ function build(providerSpec, log, path, pathType) {
   update_favicon(BASE_URL + "favicon_building.ico");
   // split provider prefix off of providerSpec
   var spec = providerSpec.slice(providerSpec.indexOf('/') + 1);
+
   // Update the text of the loading page if it exists
   if ($('div#loader-text').length > 0) {
     $('div#loader-text p.launching').text("Starting repository: " + spec)
