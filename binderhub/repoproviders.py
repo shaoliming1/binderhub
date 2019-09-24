@@ -445,13 +445,13 @@ class GitLabRepoProvider(RepoProvider):
             namespace=namespace,
             ref=urllib.parse.quote(self.unresolved_ref, safe=''),
         )
-        self.log.debug("Fetching %s", api_url)
 
         if self.auth:
             # Add auth params. After logging!
             api_url = url_concat(api_url, self.auth)
 
         try:
+            self.log.debug("Fetching %s", api_url)
             resp = yield client.fetch(api_url, user_agent="BinderHub")
         except HTTPError as e:
             print(e)
@@ -490,13 +490,19 @@ class BnuRepoProvider(GitLabRepoProvider):
         """
         )
 
+    @default('git_credentials')
+    def _default_git_credentials(self):
+        if self.private_token:
+            return r'username=shaoliming\npassword={token}'.format(token=self.private_token)
+        return ""
+
     @default('auth')
     def _default_auth(self):
         auth = {}
-        for key in ('access_token', 'private_token'):
+        for key in {'private_token'}:
             value = getattr(self, key)
             if value:
-                auth[key.upper()] = value
+                auth[key] = value
         return auth
 
     @default('access_token')
