@@ -2,14 +2,50 @@
 
 import json
 
+from jupyterhub.utils import url_path_join
+from tornado.httputil import url_concat
+from traitlets import default
+
 from http.client import responses
 from tornado import web
 from jupyterhub.services.auth import HubOAuthenticated, HubOAuth
 
 from . import __version__ as binder_version
 
+class OAuth(HubOAuth):
 
-class BaseHandler(HubOAuthenticated, web.RequestHandler):
+    def _login_url(self):
+        login_url = self.hub_host + url_path_join(self.hub_prefix, 'authorize')
+        return login_url
+
+    def gitlab_login_url(self):
+        print(self.hub_host)
+        print(self.hub_prefix)
+        login_url = self.hub_host + url_path_join(self.hub_prefix, 'authorize')
+        return login_url
+
+    def get_gitlab_prefix(self):
+        return "oauth"
+
+
+class OAuthenticated(HubOAuthenticated):
+    hub_auth_class = OAuth
+
+    def get_login_url(self):
+        """Return the Hub's login URL"""
+        if isinstance(self.hub_auth, OAuth):
+            print("GitlabOAuth")
+        login_url = self.hub_auth.login_url = self.hub_auth.gitlab_login_url()
+        print(login_url)
+        if isinstance(self.hub_auth, OAuth):
+            # add state argument to OAuth url
+            state = self.hub_auth.set_state_cookie(self, next_url=self.request.uri)
+            login_url = url_concat(login_url, {'state': state})
+        # app_log.debug("Redirecting to login url: %s", login_url)
+        return login_url
+
+
+class BaseHandler(OAuthenticated, web.RequestHandler):
     """HubAuthenticated by default allows all successfully identified users (see allow_all property)."""
 
     def initialize(self):

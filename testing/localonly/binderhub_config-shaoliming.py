@@ -8,3 +8,4 @@ c.BinderHub.build_image = '172.16.185.31:30002/jupyter/repo2docker:20180529'
 # c.BinderHub.tornado_settings.update({'fake_build':True})
 
 c.BinderHub.about_message = "<blink>Hello world.</blink>"
+c.BinderHub.auth_enabled = True

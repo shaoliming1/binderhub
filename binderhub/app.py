@@ -560,7 +560,9 @@ class BinderHub(Application):
         if self.auth_enabled:
             oauth_redirect_uri = os.getenv('JUPYTERHUB_OAUTH_CALLBACK_URL') or \
                                  url_path_join(self.base_url, 'oauth_callback')
+            self.log.debug("redirect_uri : %s", oauth_redirect_uri)
             oauth_redirect_uri = urlparse(oauth_redirect_uri).path
+            self.log.debug("redirect_uri : %s", oauth_redirect_uri)
             handlers.insert(-1, (re.escape(oauth_redirect_uri), HubOAuthCallbackHandler))
         self.tornado_app = tornado.web.Application(handlers, **self.tornado_settings)
 
